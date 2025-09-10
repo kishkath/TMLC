@@ -7,7 +7,7 @@ class Config:
     All parameters (device, model, data paths, LoRA, training args)
     can be modified in config.json without changing the code.
     """
-    def __init__(self, path="config.json"):
+    def __init__(self, path="week2_peft_dop/configurations/config.json"):
         with open(path, "r") as f:
             cfg = json.load(f)
 
@@ -25,3 +25,4 @@ class Config:
 
         # Training arguments
         self.training = cfg.get("training", {})
+
