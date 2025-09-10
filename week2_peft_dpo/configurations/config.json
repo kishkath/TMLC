@@ -24,8 +24,8 @@
     "save_strategy": "steps",
     "save_steps": 1,
     "save_total_limit": 2,
-    "output_dir": "./qwen2.5-0.5b-finetuned",
-    "logging_dir": "./logs",
+    "output_dir": "/kaggle/working/qwen2.5-0.5b-finetuned",
+    "logging_dir": "/kaggle/working/logs",
     "load_best_model_at_end": true,
     "metric_for_best_model": "loss",
     "report_to": "none"
@@ -33,8 +33,8 @@
   "inference": {
     "mode": "lora",
     "base_model_name": "Qwen/Qwen2.5-0.5B",
-    "adapter_path": "./qwen2.5-0.5b-finetuned",
-    "merged_model_path": "./qwen2.5-0.5b-merged",
+    "adapter_path": "/kaggle/working/qwen2.5-0.5b-finetuned",
+    "merged_model_path": "/kaggle/working/qwen2.5-0.5b-merged",
     "generation": {
       "max_new_tokens": 512,
       "temperature": 0.2,
@@ -47,4 +47,5 @@
     ]
   }
 }
+
 
