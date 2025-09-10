@@ -16,8 +16,8 @@ N_GPUS = torch.cuda.device_count() if DEVICE == "cuda" else 0
 
 # ------------------- Model & Data -------------------
 MODEL_NAME = cfg["model_name"]
-TRAIN_FILE = cfg["train_file"]
-EVAL_FILE = cfg["eval_file"]
+TRAIN_FILE = ROOT_DIR / cfg["train_file"]
+EVAL_FILE = ROOT_DIR / cfg["eval_file"]
 MAX_LENGTH = cfg.get("max_length", 512)
 
 # ------------------- LoRA -------------------
@@ -34,7 +34,7 @@ TRAINING_ARGS = cfg["training"]
 # ------------------- Inference -------------------
 MODE = cfg["inference"]["mode"]
 BASE_MODEL_NAME = cfg["inference"]["base_model_name"]
-ADAPTER_PATH = cfg["inference"]["adapter_path"]
-MERGED_MODEL_PATH = cfg["inference"]["merged_model_path"]
+ADAPTER_PATH = ROOT_DIR / cfg["inference"]["adapter_path"]
+MERGED_MODEL_PATH = ROOT_DIR / cfg["inference"]["merged_model_path"]
 GENERATION_PARAMS = cfg["inference"]["generation"]
 QUESTIONS = cfg["inference"]["questions"]
