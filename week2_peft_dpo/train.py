@@ -3,9 +3,7 @@ import sys
 import torch
 from pathlib import Path
 import os
-from rich.table import Table
-from rich.console import Console
-from rich.live import Live
+from tqdm.auto import tqdm
 
 # ------------------- Paths -------------------
 REPO_ROOT = Path(__file__).resolve().parent
@@ -30,7 +28,6 @@ from configurations.config import (
 from dataset.data_utils import create_dataset, tokenize_dataset
 from finetuning.model import load_model_and_tokenizer
 from finetuning.trainer import get_lora_config, get_training_args, get_trainer
-from transformers import TrainerCallback, TrainerState, TrainerControl
 
 # ------------------- Logging -------------------
 logging.basicConfig(
@@ -69,37 +66,31 @@ lora_config = get_lora_config(
     task_type=LORA_TASK_TYPE
 )
 training_args = get_training_args(TRAINING_ARGS)
+# Ensure tqdm works
+training_args.remove_unused_columns = False
+training_args.report_to = "none"
+training_args.logging_steps = TRAINING_ARGS.get("logging_steps", 1)
+training_args.progress_bar_refresh_rate = 1
+
 log_print("LoRA config and training arguments ready.")
 
 trainer = get_trainer(model, tokenized_train_dataset, tokenized_eval_dataset, lora_config, training_args)
 log_print("Trainer initialized.")
 
-# ------------------- Rich Table Callback -------------------
-console = Console()
-table = Table()
-for col in ["Step", "Loss", "LR"]:
-    table.add_column(col)
-rows = []
-
-class LiveTableCallback(TrainerCallback):
-    def on_log(self, args, state: TrainerState, control: TrainerControl, logs=None, **kwargs):
-        logs = logs or {}
-        step = str(state.global_step)
-        loss = f"{logs.get('loss', 0.0):.4f}"
-        lr = f"{logs.get('learning_rate', 0.0):.6f}"
-        rows.append([step, loss, lr])
-        table.rows = []
-        for r in rows[-20:]:  # show last 20 steps
-            table.add_row(*r)
-        live.update(table)
-
-live = Live(table, console=console, refresh_per_second=2)
-trainer.add_callback(LiveTableCallback())
-
 # ------------------- Training -------------------
 log_print("Starting training...")
-with live:
-    trainer.train()
+
+# Wrap train_dataset in tqdm for batch-level progress bar
+num_train_steps = len(tokenized_train_dataset) // training_args.per_device_train_batch_size
+pbar = tqdm(range(num_train_steps), desc="Training Progress", unit="step", ncols=100)
+
+for _ in trainer.train():
+    pbar.update(1)
+    if trainer.state.global_step % training_args.logging_steps == 0:
+        current_loss = trainer.state.log_history[-1]["loss"] if trainer.state.log_history else None
+        log_print(f"Step {trainer.state.global_step}/{num_train_steps} - Loss: {current_loss}")
+
+pbar.close()
 log_print("Training completed.")
 
 # ------------------- Save -------------------
