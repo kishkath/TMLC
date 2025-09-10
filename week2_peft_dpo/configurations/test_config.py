@@ -13,7 +13,7 @@ class TestConfig:
       - list of questions
     """
 
-    def __init__(self, path="inference_configs.json"):
+    def __init__(self, path="week2_peft_dop/configurations/inference_configs.json"):
         with open(path, "r") as f:
             cfg = json.load(f)
 
@@ -23,6 +23,7 @@ class TestConfig:
         self.merged_model_path = cfg.get("merged_model_path", "./merged_model")
         self.generation = cfg.get("generation", {"max_new_tokens": 512, "temperature": 0.7, "top_p": 0.9})
         self.questions = cfg.get("questions", [])
+
 
 
 
