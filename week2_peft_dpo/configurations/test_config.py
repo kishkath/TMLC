@@ -21,6 +21,7 @@ class TestConfig:
         self.base_model_name = cfg.get("base_model_name")
         self.adapter_path = cfg.get("adapter_path")
         self.merged_model_path = cfg.get("merged_model_path", "./merged_model")
-        self.generation = cfg.get("generation", {"max_new_tokens": 100, "temperature": 0.7, "top_p": 0.9})
+        self.generation = cfg.get("generation", {"max_new_tokens": 1024, "temperature": 0.7, "top_p": 0.9})
         self.questions = cfg.get("questions", [])
+
 
