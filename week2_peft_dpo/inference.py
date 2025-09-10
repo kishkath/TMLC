@@ -1,28 +1,16 @@
 import logging
-from pathlib import Path
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from peft import PeftModel
-from configurations.test_config import TestConfig
-
-# ---------------- Logging ----------------
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s",
-    datefmt="%H:%M:%S",
+from configurations.config import (
+    MODE, BASE_MODEL_NAME, ADAPTER_PATH, MERGED_MODEL_PATH, GENERATION_PARAMS, QUESTIONS
 )
+
+# ------------------- Logging -------------------
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
 
-# ---------------- Paths ----------------
-ROOT_DIR = Path(__file__).resolve().parent
-cfg_path = ROOT_DIR / "configurations" / "inference_configs.json"
-
-# Load inference configuration
-cfg = TestConfig(cfg_path)
-
-
-# ---------------- Functions ----------------
+# ------------------- Functions -------------------
 def save_merged_model(base_model_name, adapter_path, save_path):
-    """Merge LoRA adapter into base model and save it."""
     logger.info("Loading base model for merging...")
     model = AutoModelForCausalLM.from_pretrained(base_model_name, device_map="auto")
 
@@ -38,15 +26,12 @@ def save_merged_model(base_model_name, adapter_path, save_path):
 
 
 def run_inference(model_path, questions, generation_params, mode, base_model_name=None):
-    """Run inference either with LoRA adapter or merged model."""
     tokenizer = AutoTokenizer.from_pretrained(model_path)
 
     if mode == "lora":
-        logger.info("Loading base model with LoRA adapter...")
         base_model = AutoModelForCausalLM.from_pretrained(base_model_name, device_map="auto")
         model = PeftModel.from_pretrained(base_model, model_path)
     else:
-        logger.info("Loading merged model...")
         model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto")
 
     faq_pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
@@ -57,22 +42,10 @@ def run_inference(model_path, questions, generation_params, mode, base_model_nam
         logger.info(f"Answer: {response[0]['generated_text']}\n")
 
 
-# ---------------- Main ----------------
+# ------------------- Main -------------------
 if __name__ == "__main__":
-    if cfg.mode == "merged":
-        save_merged_model(cfg.base_model_name, cfg.adapter_path, cfg.merged_model_path)
-        run_inference(
-            cfg.merged_model_path,
-            cfg.questions,
-            cfg.generation,
-            cfg.mode,
-            cfg.base_model_name,
-        )
+    if MODE == "merged":
+        save_merged_model(BASE_MODEL_NAME, ADAPTER_PATH, MERGED_MODEL_PATH)
+        run_inference(MERGED_MODEL_PATH, QUESTIONS, GENERATION_PARAMS, MODE, BASE_MODEL_NAME)
     else:
-        run_inference(
-            cfg.adapter_path,
-            cfg.questions,
-            cfg.generation,
-            cfg.mode,
-            cfg.base_model_name,
-        )
+        run_inference(ADAPTER_PATH, QUESTIONS, GENERATION_PARAMS, MODE, BASE_MODEL_NAME)
