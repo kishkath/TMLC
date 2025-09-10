@@ -1,28 +1,40 @@
 import json
+from pathlib import Path
 import torch
 
-class Config:
-    """
-    Loads training configuration from a JSON file.
-    All parameters (device, model, data paths, LoRA, training args)
-    can be modified in config.json without changing the code.
-    """
-    def __init__(self, path="week2_peft_dop/configurations/config.json"):
-        with open(path, "r") as f:
-            cfg = json.load(f)
+# ------------------- Paths -------------------
+ROOT_DIR = Path(__file__).resolve().parent.parent
+CONFIG_PATH = ROOT_DIR / "configurations" / "config.json"
 
-        # Device
-        self.device = cfg.get("device", "cuda" if torch.cuda.is_available() else "cpu")
+# ------------------- Load JSON -------------------
+with open(CONFIG_PATH, "r") as f:
+    cfg = json.load(f)
 
-        # Model & Data
-        self.model_name = cfg.get("model_name")
-        self.train_file = cfg.get("train_file")
-        self.eval_file = cfg.get("eval_file")
-        self.max_length = cfg.get("max_length", 512)
+# ------------------- Device -------------------
+DEVICE = cfg.get("device", "cuda" if torch.cuda.is_available() else "cpu")
+N_GPUS = torch.cuda.device_count() if DEVICE == "cuda" else 0
 
-        # LoRA configuration
-        self.lora = cfg.get("lora", {})
+# ------------------- Model & Data -------------------
+MODEL_NAME = cfg["model_name"]
+TRAIN_FILE = cfg["train_file"]
+EVAL_FILE = cfg["eval_file"]
+MAX_LENGTH = cfg.get("max_length", 512)
 
-        # Training arguments
-        self.training = cfg.get("training", {})
+# ------------------- LoRA -------------------
+LORA_R = cfg["lora"]["r"]
+LORA_ALPHA = cfg["lora"]["lora_alpha"]
+LORA_TARGET_MODULES = cfg["lora"]["target_modules"]
+LORA_DROPOUT = cfg["lora"]["lora_dropout"]
+LORA_BIAS = cfg["lora"]["bias"]
+LORA_TASK_TYPE = cfg["lora"]["task_type"]
 
+# ------------------- Training Args -------------------
+TRAINING_ARGS = cfg["training"]
+
+# ------------------- Inference -------------------
+MODE = cfg["inference"]["mode"]
+BASE_MODEL_NAME = cfg["inference"]["base_model_name"]
+ADAPTER_PATH = cfg["inference"]["adapter_path"]
+MERGED_MODEL_PATH = cfg["inference"]["merged_model_path"]
+GENERATION_PARAMS = cfg["inference"]["generation"]
+QUESTIONS = cfg["inference"]["questions"]
