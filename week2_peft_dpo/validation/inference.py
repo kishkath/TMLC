@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(
 logger = logging.getLogger(__name__)
 
 # Load inference configuration
-cfg = TestConfig("test_config.json")
+cfg = TestConfig("week2_peft_dpo/configurations/inference_configs.json")
 
 
 def save_merged_model(base_model_name, adapter_path, save_path):
@@ -49,3 +49,4 @@ if __name__ == "__main__":
         run_inference(cfg.merged_model_path, cfg.questions, cfg.generation, cfg.mode, cfg.base_model_name)
     else:
         run_inference(cfg.adapter_path, cfg.questions, cfg.generation, cfg.mode, cfg.base_model_name)
+
