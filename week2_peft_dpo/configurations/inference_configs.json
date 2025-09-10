@@ -4,7 +4,7 @@
   "adapter_path": "./qwen2.5-0.5b-finetuned",
   "merged_model_path": "./qwen2.5-0.5b-merged",
   "generation": {
-    "max_new_tokens": 100,
+    "max_new_tokens": 512,
     "temperature": 0.7,
     "top_p": 0.9
   },
@@ -13,3 +13,4 @@
     "What are the benefits of strength training?"
   ]
 }
+
