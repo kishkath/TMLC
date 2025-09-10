@@ -3,18 +3,11 @@ import os
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from peft import PeftModel
 from configurations.config import (
-    MODE,
-    BASE_MODEL_NAME,
-    ADAPTER_PATH,
-    MERGED_MODEL_PATH,
-    GENERATION_PARAMS,
-    QUESTIONS
+    MODE, BASE_MODEL_NAME, ADAPTER_PATH, MERGED_MODEL_PATH, GENERATION_PARAMS, QUESTIONS
 )
 
 # ------------------- Paths -------------------
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-# Change working dir to repo root (optional)
 os.chdir(REPO_ROOT)
 
 # ------------------- Logging -------------------
@@ -59,15 +52,15 @@ def run_inference(model_path, questions, generation_params, mode, base_model_nam
 
 # ------------------- Main -------------------
 if __name__ == "__main__":
-    adapter_path_abs = os.path.join(REPO_ROOT, ADAPTER_PATH)
-    merged_model_path_abs = os.path.join(REPO_ROOT, MERGED_MODEL_PATH)
+    adapter_path = ADAPTER_PATH
+    merged_model_path = MERGED_MODEL_PATH
     base_model_name = BASE_MODEL_NAME
     generation_params = GENERATION_PARAMS
     questions = QUESTIONS
     mode = MODE
 
     if mode == "merged":
-        save_merged_model(base_model_name, adapter_path_abs, merged_model_path_abs)
-        run_inference(merged_model_path_abs, questions, generation_params, mode, base_model_name)
+        save_merged_model(base_model_name, adapter_path, merged_model_path)
+        run_inference(merged_model_path, questions, generation_params, mode, base_model_name)
     else:
-        run_inference(adapter_path_abs, questions, generation_params, mode, base_model_name)
+        run_inference(adapter_path, questions, generation_params, mode, base_model_name)
