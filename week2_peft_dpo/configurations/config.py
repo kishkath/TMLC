@@ -2,28 +2,23 @@ import json
 from pathlib import Path
 import torch
 
-
 # ------------------- Paths -------------------
 ROOT_DIR = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT_DIR / "configurations" / "config.json"
 
-
 # ------------------- Load JSON -------------------
 with open(CONFIG_PATH, "r") as f:
-cfg = json.load(f)
-
+    cfg = json.load(f)
 
 # ------------------- Device -------------------
 DEVICE = cfg.get("device", "cuda" if torch.cuda.is_available() else "cpu")
 N_GPUS = torch.cuda.device_count() if DEVICE == "cuda" else 0
-
 
 # ------------------- Model & Data -------------------
 MODEL_NAME = cfg["model_name"]
 TRAIN_FILE = cfg["train_file"]
 EVAL_FILE = cfg["eval_file"]
 MAX_LENGTH = cfg.get("max_length", 512)
-
 
 # ------------------- LoRA -------------------
 LORA_R = cfg["lora"]["r"]
@@ -33,10 +28,8 @@ LORA_DROPOUT = cfg["lora"]["lora_dropout"]
 LORA_BIAS = cfg["lora"]["bias"]
 LORA_TASK_TYPE = cfg["lora"]["task_type"]
 
-
 # ------------------- Training Args -------------------
 TRAINING_ARGS = cfg["training"]
-
 
 # ------------------- Inference -------------------
 MODE = cfg["inference"]["mode"]
