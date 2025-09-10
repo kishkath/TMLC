@@ -1,13 +1,25 @@
 import logging
+import os
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from peft import PeftModel
-from configurations.config import (
-    MODE, BASE_MODEL_NAME, ADAPTER_PATH, MERGED_MODEL_PATH, GENERATION_PARAMS, QUESTIONS
-)
+from configurations.config import Config
+
+# ------------------- Paths -------------------
+REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(REPO_ROOT, "configurations/config.json")
+
+# Change working dir to repo root (optional)
+os.chdir(REPO_ROOT)
 
 # ------------------- Logging -------------------
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
 logger = logging.getLogger(__name__)
+
+# ------------------- Config -------------------
+cfg = Config(CONFIG_PATH)
 
 # ------------------- Functions -------------------
 def save_merged_model(base_model_name, adapter_path, save_path):
@@ -44,8 +56,15 @@ def run_inference(model_path, questions, generation_params, mode, base_model_nam
 
 # ------------------- Main -------------------
 if __name__ == "__main__":
-    if MODE == "merged":
-        save_merged_model(BASE_MODEL_NAME, ADAPTER_PATH, MERGED_MODEL_PATH)
-        run_inference(MERGED_MODEL_PATH, QUESTIONS, GENERATION_PARAMS, MODE, BASE_MODEL_NAME)
+    adapter_path = os.path.join(REPO_ROOT, cfg.inference.get("adapter_path"))
+    merged_model_path = os.path.join(REPO_ROOT, cfg.inference.get("merged_model_path"))
+    base_model_name = cfg.inference.get("base_model_name")
+    generation_params = cfg.inference.get("generation")
+    questions = cfg.inference.get("questions")
+    mode = cfg.inference.get("mode")
+
+    if mode == "merged":
+        save_merged_model(base_model_name, adapter_path, merged_model_path)
+        run_inference(merged_model_path, questions, generation_params, mode, base_model_name)
     else:
-        run_inference(ADAPTER_PATH, QUESTIONS, GENERATION_PARAMS, MODE, BASE_MODEL_NAME)
+        run_inference(adapter_path, questions, generation_params, mode, base_model_name)
