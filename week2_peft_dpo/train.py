@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-cfg = Config("/configurations/config.json")
+cfg = Config("configurations/config.json")
 device = cfg.device
 n_gpus = torch.cuda.device_count() if device == "cuda" else 0
 logger.info(f"Device: {device}, GPUs available: {n_gpus}")
@@ -41,5 +41,6 @@ else:
     trainer.model.save_pretrained(cfg.training.get("output_dir"))
 tokenizer.save_pretrained(cfg.training.get("output_dir"))
 logger.info(f"All artifacts saved to {cfg.training.get('output_dir')}")
+
 
 
