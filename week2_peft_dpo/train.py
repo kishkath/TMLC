@@ -87,7 +87,11 @@ pbar = tqdm(range(num_train_steps), desc="Training Progress", unit="step", ncols
 for _ in trainer.train():
     pbar.update(1)
     if trainer.state.global_step % training_args.logging_steps == 0:
-        current_loss = trainer.state.log_history[-1]["loss"] if trainer.state.log_history else None
+        if trainer.state.log_history:
+            last_log = trainer.state.log_history[-1]
+            current_loss = last_log.get("loss", last_log.get("eval_loss", None))
+        else:
+            current_loss = None
         log_print(f"Step {trainer.state.global_step}/{num_train_steps} - Loss: {current_loss}")
 
 pbar.close()
@@ -98,3 +102,4 @@ log_print("Saving LoRA adapter & tokenizer...")
 trainer.model.save_pretrained(TRAINING_ARGS.get("output_dir"))
 tokenizer.save_pretrained(TRAINING_ARGS.get("output_dir"))
 log_print(f"All artifacts saved to {TRAINING_ARGS.get('output_dir')}")
+
