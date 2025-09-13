@@ -48,7 +48,7 @@ def log_print(message):
 wandb.init(
     project="fitness-qa-bot",
     config=TRAINING_ARGS,
-    name="qwen2.5-finetune"
+    name="qwen2.5-finetuning"
 )
 
 # ------------------- Model & Tokenizer -------------------
@@ -77,6 +77,7 @@ training_args = get_training_args(TRAINING_ARGS)
 training_args.remove_unused_columns = False
 training_args.report_to = "none"  # keep console + wandb
 training_args.logging_steps = TRAINING_ARGS.get("logging_steps", 1)
+training_args.load_best_model_at_end = TRAINING_ARGS.get("load_best_model_at_end", True)
 
 log_print("LoRA config and training arguments ready.")
 
@@ -147,3 +148,4 @@ tokenizer.save_pretrained(TRAINING_ARGS.get("output_dir"))
 log_print(f"All artifacts saved to {TRAINING_ARGS.get('output_dir')}")
 
 wandb.finish()
+
