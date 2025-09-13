@@ -31,7 +31,7 @@ def log_print(message):
 # ------------------- Weights & Biases Init -------------------
 wandb.init(
     project="fitness-qa-bot",
-    name="inference-run",
+    name="qwen-finetuned-inference",
     job_type="inference"
 )
 
@@ -110,3 +110,4 @@ else:
 
 log_print("Inference completed.")
 wandb.finish()
+
