@@ -3,31 +3,31 @@
   "model_name": "Qwen/Qwen2.5-0.5B-Instruct",
   "train_file": "dataset/qa_fitness_nutrition_train.jsonl",
   "eval_file": "dataset/qa_fitness_nutrition_val.jsonl",
-  "max_length": 256,
+  "max_length": 512,
   "lora": {
-    "r": 8,
-    "lora_alpha": 16,
+    "r": 16,
+    "lora_alpha": 64,
     "target_modules": ["q_proj", "v_proj"],
-    "lora_dropout": 0.1,
+    "lora_dropout": 0.15,
     "bias": "none",
     "task_type": "CAUSAL_LM"
   },
   "training": {
-    "per_device_train_batch_size": 1,
-    "gradient_accumulation_steps": 2,
-    "learning_rate": 5e-5,
-    "warmup_steps": 1,
-    "num_train_epochs": 1,
-    "max_steps": 7,
-    "logging_steps": 3,
+    "per_device_train_batch_size": 2,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 2e-5,
+    "warmup_steps": 50,
+    "num_train_epochs": 5,
+    "logging_steps": 10,
     "evaluation_strategy": "steps",
-    "eval_steps": 4,
+    "eval_steps": 50,
     "save_strategy": "steps",
-    "save_steps": 2,
-    "save_total_limit": 1,
+    "save_steps": 50,
+    "save_total_limit": 2,
     "output_dir": "/kaggle/working/qwen2.5-0.5b-finetuned",
     "logging_dir": "/kaggle/working/logs",
-    "load_best_model_at_end": false,
+    "load_best_model_at_end": true,
+    "metric_for_best_model": "loss",
     "report_to": "none"
   },
   "inference": {
@@ -36,7 +36,7 @@
     "adapter_path": "/kaggle/working/qwen2.5-0.5b-finetuned",
     "merged_model_path": "/kaggle/working/qwen2.5-0.5b-merged",
     "generation": {
-      "max_new_tokens": 128,
+      "max_new_tokens": 512,
       "temperature": 0.7,
       "top_p": 0.9
     },
@@ -47,5 +47,3 @@
     ]
   }
 }
-
-
