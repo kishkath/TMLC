@@ -17,7 +17,7 @@
     "gradient_accumulation_steps": 8,
     "learning_rate": 2e-5,
     "warmup_steps": 50,
-    "num_train_epochs": 5,
+    "num_train_epochs": 4,
     "logging_steps": 20,
     "evaluation_strategy": "steps",
     "eval_steps": 50,
@@ -48,5 +48,6 @@
     ]
   }
 }
+
 
 
