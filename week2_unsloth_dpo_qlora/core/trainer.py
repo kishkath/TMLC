@@ -38,7 +38,7 @@ def create_dpo_trainer(model, ref_model, tokenizer, dataset):
         logger.info(f"Initializing WandB project: {WANDB_PROJECT}, run name: {WANDB_NAME}")
         wandb.init(project=WANDB_PROJECT, config=TRAINER_CONFIG, name=WANDB_NAME)
 
-    logger.info("DPO Trainer created successfully.")
+    logger.info("✅ DPO Trainer created successfully.")
     return trainer
 
 
