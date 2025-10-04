@@ -65,7 +65,7 @@
         "enable": true,
         "host": "0.0.0.0",
         "port": 8000,
-        "endpoint": "/predict",
+        "endpoint": "/predict/",
         "max_request_length": 1024
     },
 
@@ -73,3 +73,4 @@
         "level": "INFO"
     }
 }
+
