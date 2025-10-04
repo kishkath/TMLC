@@ -45,8 +45,9 @@
     },
     "wandb": {
         "use": true,
-        "project": "fitness-qa-bot",
-        "name": "qwen2.5-finetuning"
+        "project": "fitness_bot_qlora",
+        "name": "qwen3-finetuning"
     }
 }
+
 
