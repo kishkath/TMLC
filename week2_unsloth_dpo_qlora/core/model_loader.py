@@ -25,8 +25,20 @@ def load_model():
         use_rslora=LORA_CONFIG.get("use_rslora", False),
         loftq_config=LORA_CONFIG.get("loftq_config", None),
     )
+    logger.info("✅ LoRA adapters attached")
 
     return model, tokenizer
+
+
+def load_reference_model():
+    logger.info(f"Loading reference model '{MODEL_NAME}'")
+    ref_model, _ = FastLanguageModel.from_pretrained(
+        model_name=MODEL_NAME,
+        dtype=DTYPE,
+        load_in_4bit=LOAD_IN_4BIT,
+    )
+    logger.info("✅ Reference model loaded")
+    return ref_model
 
 
 def load_finetuned_model(model_path, max_seq_length=512, load_in_4bit=True):
