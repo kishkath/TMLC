@@ -1,8 +1,8 @@
 {
     "train_file": "/kaggle/input/fitness-qa-dpo-based/dpo_train.json",
     "val_file": "/kaggle/input/fitness-qa-dpo-based/dpo_val.json",
-    "train_limit": 700,
-    "test_limit": 100,
+    "train_limit": 400,
+    "test_limit": 60,
     "model_name": "unsloth/Qwen3-0.6B-unsloth-bnb-4bit",
     "max_seq_length": 512,
     "dtype": null,
@@ -49,3 +49,4 @@
         "name": "qwen2.5-finetuning"
     }
 }
+
