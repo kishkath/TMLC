@@ -1,5 +1,15 @@
 import torch
 
+def get_adaptive_max_tokens(config):
+    if config["inference"].get("adaptive_generation", False):
+        try:
+            vram_free = torch.cuda.mem_get_info()[0] / 1e9  # in GB
+            if vram_free < config["inference"]["adaptive_threshold_vram_gb"]:
+                return max(512, int(config["inference"]["max_new_tokens"] / 2))
+        except Exception:
+            pass
+    return config["inference"]["max_new_tokens"]
+
 def predict(model, tokenizer, input_prompt, system_prompt=None, max_new_tokens=512, temperature=0.2):
     system_prompt = system_prompt or "You are a helpful assistant that assists users to find the correct methods/approach for security within an organization."
     messages = [
@@ -18,6 +28,7 @@ def predict(model, tokenizer, input_prompt, system_prompt=None, max_new_tokens=5
     model_inputs = {k: v.to(device) for k, v in model_inputs.items()}
 
     with torch.no_grad():
+        max_new_tokens = get_adaptive_max_tokens(config)
         generated_ids = model.generate(**model_inputs, max_new_tokens=max_new_tokens, temperature=temperature)
 
     generated_ids = [
@@ -25,3 +36,4 @@ def predict(model, tokenizer, input_prompt, system_prompt=None, max_new_tokens=5
     ]
 
     return tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
