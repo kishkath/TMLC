@@ -1,48 +1,49 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from core.model_loader import load_finetuned_model
-from configurations.config import CONFIG
+from configurations.config import INFERENCE_CONFIG, logger
 import torch
 
 app = FastAPI(title="Fitness QA Bot API", version="1.0")
 
-# Load the model once at startup
-model, tokenizer = load_finetuned_model(CONFIG)
+logger.info("Loading fine-tuned model...")
+model, tokenizer = load_finetuned_model(
+    INFERENCE_CONFIG.get("model_path"),
+    INFERENCE_CONFIG.get("max_seq_length"),
+    INFERENCE_CONFIG.get("load_in_4bit")
+)
+logger.info("Model loaded successfully.")
 model.eval()
 
-# ----------------------------- Request Schema -----------------------------
 class QueryRequest(BaseModel):
     user_query: str
-    max_new_tokens: int = 256
+    max_new_tokens: int = INFERENCE_CONFIG.get("max_new_tokens", 256)
 
-# ----------------------------- Routes -----------------------------
+
 @app.get("/")
 def root():
     return {"message": "Welcome to Fitness QA Bot API (Qwen3-0.6B Finetuned Model)"}
 
+
 @app.post("/predict/")
 def predict(req: QueryRequest):
     try:
-        messages = [
-            {"role": "system", "content": "You are a helpful AI fitness assistant for gym-goers and vegetarians."},
-            {"role": "user", "content": req.user_query},
-        ]
+        logger.info(f"Received query: {req.user_query}")
+        from core.inference_utils import predict as infer
 
-        # Chat template for Qwen models
-        text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = tokenizer([text], return_tensors="pt").to(model.device)
+        response = infer(model, tokenizer, req.user_query, system_prompt=INFERENCE_CONFIG.get("system_prompt"))
 
-        with torch.no_grad():
-            outputs = model.generate(
-                **inputs,
-                max_new_tokens=req.max_new_tokens,
-                temperature=0.7,
-                top_p=0.9,
-                do_sample=True
-            )
-
-        response = tokenizer.decode(outputs[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
+        logger.info(f"Prediction completed.")
         return {"response": response.strip()}
 
     except Exception as e:
+        logger.error(f"Error during prediction: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    from configurations.config import API_CONFIG
+
+    logger.info(f"Starting API at {API_CONFIG.get('host')}:{API_CONFIG.get('port')}")
+    uvicorn.run(app, host=API_CONFIG.get("host", "0.0.0.0"), port=API_CONFIG.get("port", 8000))
