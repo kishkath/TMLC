@@ -40,3 +40,43 @@ def load_finetuned_model(model_path, max_seq_length=512, load_in_4bit=True):
     )
     FastLanguageModel.for_inference(model)
     return model, tokenizer
+
+from unsloth import FastLanguageModel
+from peft import LoraConfig
+
+def load_model_with_lora(config):
+    """
+    Loads Qwen3-0.6B with Unsloth + QLoRA + DPO support.
+    """
+    # Extract parameters
+    model_name = config["model_name"]
+    max_seq_length = config.get("max_seq_length", 512)
+    dtype = config.get("dtype", None)
+    load_in_4bit = config.get("load_in_4bit", True)
+
+    # Load base model with Unsloth
+    model, tokenizer = FastLanguageModel.from_pretrained(
+        model_name=model_name,
+        max_seq_length=max_seq_length,
+        dtype=dtype,
+        load_in_4bit=load_in_4bit,
+    )
+
+    # LoRA Configuration
+    lora_params = config["lora"]
+    lora_config = LoraConfig(
+        r=lora_params["r"],
+        lora_alpha=lora_params["lora_alpha"],
+        lora_dropout=lora_params["lora_dropout"],
+        bias=lora_params["bias"],
+        target_modules=lora_params["target_modules"],
+        task_type="CAUSAL_LM",
+        use_rslora=lora_params.get("use_rslora", True)
+    )
+
+    # Apply LoRA adapters to model
+    model = FastLanguageModel.get_peft_model(model, lora_config)
+
+    print(f"✅ LoRA adapters successfully attached to {model_name}")
+    return model, tokenizer
+
