@@ -1,17 +1,16 @@
-%%capture
-!pip install pip3-autoremove
-!pip install datasets trl wandb
-!pip-autoremove torch torchvision torchaudio -y
-!pip install "torch==2.4.0" "xformers==0.0.27.post2" triton torchvision torchaudio
-!pip install "unsloth[kaggle-new] @ git+https://github.com/unslothai/unsloth.git"
-# FastAPI & API
-fastapi>=0.100.0
-uvicorn[standard]>=0.23.0
-pydantic>=2.5.0
-
-# Logging & Utils
-loguru>=0.7.0
-
-# Misc
-numpy>=1.25.0
-scipy>=1.11.0
+pip3-autoremove
+datasets
+trl
+wandb
+fastapi
+uvicorn
+pydantic
+loguru
+torch==2.4.0
+xformers==0.0.27.post2
+triton
+torchvision
+torchaudio
+unsloth[kaggle-new] @ git+https://github.com/unslothai/unsloth.git
+numpy
+scipy
