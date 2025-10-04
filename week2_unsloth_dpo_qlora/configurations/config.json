@@ -1,8 +1,8 @@
 {
     "train_file": "/kaggle/input/fitness-qa-dpo-based/dpo_train.json",
     "val_file": "/kaggle/input/fitness-qa-dpo-based/dpo_val.json",
-    "train_limit": 100,
-    "test_limit": 30,
+    "train_limit": 4200,
+    "test_limit": 500,
 
     "model": {
         "name": "unsloth/Qwen3-0.6B-unsloth-bnb-4bit",
@@ -29,9 +29,9 @@
         "per_device_train_batch_size": 2,
         "gradient_accumulation_steps": 4,
         "warmup_ratio": 0.1,
-        "num_train_epochs": 4,
+        "num_train_epochs": 5,
         "learning_rate": 5e-6,
-        "logging_steps": 10,
+        "logging_steps": 50,
         "optim": "adamw_8bit",
         "weight_decay": 0.01,
         "lr_scheduler_type": "linear",
@@ -74,3 +74,4 @@
         "log_file": "logs/fitness_bot.log"
     }
 }
+
