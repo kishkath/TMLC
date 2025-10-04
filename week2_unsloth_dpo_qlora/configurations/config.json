@@ -1,8 +1,8 @@
 {
     "train_file": "/kaggle/input/fitness-qa-dpo-based/dpo_train.json",
     "val_file": "/kaggle/input/fitness-qa-dpo-based/dpo_val.json",
-    "train_limit": 4000,
-    "test_limit": 1200,
+    "train_limit": 100,
+    "test_limit": 30,
 
     "model": {
         "name": "unsloth/Qwen3-0.6B-unsloth-bnb-4bit",
@@ -74,6 +74,7 @@
         "log_file": "logs/fitness_bot.log"
     }
 }
+
 
 
 
