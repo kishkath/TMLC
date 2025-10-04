@@ -70,8 +70,10 @@
     },
 
     "logging": {
-        "level": "INFO"
+        "level": "INFO",
+        "log_file": "logs/fitness_bot.log"
     }
 }
+
 
 
