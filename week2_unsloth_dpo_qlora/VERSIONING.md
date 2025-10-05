@@ -107,3 +107,9 @@ LoRA applied to only QKV and attention modules for efficiency.
 wandb tracking enabled.
 
 Production-ready API endpoint configuration.
+
+Results:
+| Run Name              | Epochs | Steps | Train Loss | Grad Norm | LR Final | Rewards Accuracy | Rewards Margin | Runtime | Key Insight                                                                                                          |
+| --------------------- | -----: | ----: | ---------: | --------: | -------: | ---------------: | -------------: | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| qwen3_0.6b_finetuning |      5 |  2625 |     0.0139 |   0.00062 |      0.0 |              1.0 |          12.22 | 1h 47m  | Training saturated early with near‑zero loss from epoch 2. Adjust LR schedule and warm‑up to improve generalization. |
+
