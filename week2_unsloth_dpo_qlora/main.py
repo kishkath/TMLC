@@ -21,7 +21,7 @@ if __name__ == "__main__":
     logger.info("Preparing dataset...")
     dataset = prepare_dataset(TRAIN_FILE, VAL_FILE, TRAIN_LIMIT, TEST_LIMIT)
     logger.info(f"✅ Train size: {len(dataset['train'])}")
-    logger.info(f"✅ Test size: {len(dataset['test'])}")
+    logger.info(f"✅ Test size: {len(dataset['val'])}")
     logger.info(f"✅ Example record: {dataset['train'][0]}")
 
     logger.info("Loading models...")
@@ -38,3 +38,4 @@ if __name__ == "__main__":
 
     save_path = TRAINER_CONFIG.get("output_dir", "outputs")
     train_and_save(trainer, model, tokenizer, save_path)
+
