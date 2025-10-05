@@ -28,7 +28,7 @@ def create_dpo_trainer(model, ref_model, tokenizer, dataset):
         args=dpo_args,
         beta=TRAINER_CONFIG.get("beta", 0.1),
         train_dataset=dataset["train"],
-        eval_dataset=dataset["test"],
+        eval_dataset=dataset["val"],  # ✅ fixed: use val dataset for validation
         tokenizer=tokenizer,
         max_length=TRAINER_CONFIG.get("max_length", 1024),
         max_prompt_length=TRAINER_CONFIG.get("max_prompt_length", 256),
@@ -53,7 +53,7 @@ def train_and_save(trainer, model, tokenizer, save_path=None):
 
         trainer.train()
 
-        # Perform validation at defined intervals
+        # Validation at defined intervals
         if eval_steps > 0 and trainer.state.global_step % eval_steps == 0:
             logger.info(f"🧪 Running validation at step {trainer.state.global_step}...")
             eval_metrics = trainer.evaluate()
@@ -67,10 +67,9 @@ def train_and_save(trainer, model, tokenizer, save_path=None):
     logger.info("🧪 Running final validation...")
     eval_metrics = trainer.evaluate()
     logger.info(f"📊 Final validation metrics: {eval_metrics}")
-    if USE_WANDB:
-        wandb.log({f"eval_{k}": v for k, v in eval_metrics.items()}, step=trainer.state.global_step)
 
     if USE_WANDB:
+        wandb.log({f"eval_{k}": v for k, v in eval_metrics.items()}, step=trainer.state.global_step)
         wandb.finish()
 
     save_path = save_path or TRAINER_CONFIG.get("output_dir", "outputs")
