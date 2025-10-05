@@ -2,7 +2,6 @@ from unsloth import FastLanguageModel
 from configurations.config import MODEL_NAME, MAX_SEQ_LENGTH, DTYPE, LOAD_IN_4BIT, LORA_CONFIG, logger
 import os
 
-
 def load_model():
     logger.info(f"Loading model '{MODEL_NAME}' with max_seq_length={MAX_SEQ_LENGTH}")
     model, tokenizer = FastLanguageModel.from_pretrained(
@@ -13,6 +12,7 @@ def load_model():
     )
     logger.info("✅ Base model loaded")
 
+    logger.info(f"LoRA config: r={LORA_CONFIG.get('r')}, target_modules={LORA_CONFIG.get('target_modules')}")
     model = FastLanguageModel.get_peft_model(
         model,
         r=LORA_CONFIG.get("r", 16),
@@ -26,9 +26,7 @@ def load_model():
         loftq_config=LORA_CONFIG.get("loftq_config", None),
     )
     logger.info("✅ LoRA adapters attached")
-
     return model, tokenizer
-
 
 def load_reference_model():
     logger.info(f"Loading reference model '{MODEL_NAME}'")
@@ -39,7 +37,6 @@ def load_reference_model():
     )
     logger.info("✅ Reference model loaded")
     return ref_model
-
 
 def load_finetuned_model(model_path, max_seq_length=512, load_in_4bit=True):
     logger.info(f"Loading fine-tuned model from: {model_path}")
