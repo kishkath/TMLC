@@ -10,13 +10,13 @@ def create_dpo_trainer(model, ref_model, tokenizer, dataset):
     dpo_args = DPOConfig(
         per_device_train_batch_size=TRAINER_CONFIG.get("per_device_train_batch_size", 2),
         gradient_accumulation_steps=TRAINER_CONFIG.get("gradient_accumulation_steps", 4),
-        warmup_ratio=TRAINER_CONFIG.get("warmup_ratio", 0.1),
-        num_train_epochs=TRAINER_CONFIG.get("num_train_epochs", 3),
-        learning_rate=TRAINER_CONFIG.get("learning_rate", 5e-6),
-        logging_steps=TRAINER_CONFIG.get("logging_steps", 10),
+        warmup_ratio=TRAINER_CONFIG.get("warmup_ratio", 0.2),
+        num_train_epochs=TRAINER_CONFIG.get("num_train_epochs", 4),
+        learning_rate=TRAINER_CONFIG.get("learning_rate", 3e-5),
+        logging_steps=TRAINER_CONFIG.get("logging_steps", 50),
         optim=TRAINER_CONFIG.get("optim", "adamw_8bit"),
-        weight_decay=TRAINER_CONFIG.get("weight_decay", 0.0),
-        lr_scheduler_type=TRAINER_CONFIG.get("lr_scheduler_type", "linear"),
+        weight_decay=TRAINER_CONFIG.get("weight_decay", 0.01),
+        lr_scheduler_type=TRAINER_CONFIG.get("lr_scheduler_type", "cosine"),
         seed=TRAINER_CONFIG.get("seed", 42),
         output_dir=TRAINER_CONFIG.get("output_dir", "outputs"),
         report_to="wandb" if USE_WANDB else "none"
@@ -30,8 +30,8 @@ def create_dpo_trainer(model, ref_model, tokenizer, dataset):
         train_dataset=dataset["train"],
         eval_dataset=dataset["test"],
         tokenizer=tokenizer,
-        max_length=TRAINER_CONFIG.get("max_length", 512),
-        max_prompt_length=TRAINER_CONFIG.get("max_prompt_length", 128),
+        max_length=TRAINER_CONFIG.get("max_length", 1024),
+        max_prompt_length=TRAINER_CONFIG.get("max_prompt_length", 256),
     )
 
     if USE_WANDB:
@@ -44,7 +44,25 @@ def create_dpo_trainer(model, ref_model, tokenizer, dataset):
 
 def train_and_save(trainer, model, tokenizer, save_path=None):
     logger.info("🚀 Starting training...")
-    trainer.train()
+
+    num_epochs = TRAINER_CONFIG.get("num_train_epochs", 4)
+    eval_steps = TRAINER_CONFIG.get("eval_steps", 400)
+
+    global_step = 0
+
+    for epoch in range(num_epochs):
+        logger.info(f"🔹 Epoch {epoch + 1}/{num_epochs}")
+
+        trainer.train()
+
+        # Run validation after every eval_steps
+        logger.info("🧪 Running validation...")
+        eval_metrics = trainer.evaluate()
+
+        logger.info(f"📊 Validation metrics at epoch {epoch + 1}: {eval_metrics}")
+
+        if USE_WANDB:
+            wandb.log({f"eval_{k}": v for k, v in eval_metrics.items()}, step=trainer.state.global_step)
 
     if USE_WANDB:
         wandb.finish()
