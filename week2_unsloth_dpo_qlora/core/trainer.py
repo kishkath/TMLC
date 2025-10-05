@@ -48,21 +48,27 @@ def train_and_save(trainer, model, tokenizer, save_path=None):
     num_epochs = TRAINER_CONFIG.get("num_train_epochs", 4)
     eval_steps = TRAINER_CONFIG.get("eval_steps", 400)
 
-    global_step = 0
-
     for epoch in range(num_epochs):
         logger.info(f"🔹 Epoch {epoch + 1}/{num_epochs}")
 
         trainer.train()
 
-        # Run validation after every eval_steps
-        logger.info("🧪 Running validation...")
-        eval_metrics = trainer.evaluate()
+        # Perform validation at defined intervals
+        if eval_steps > 0 and trainer.state.global_step % eval_steps == 0:
+            logger.info(f"🧪 Running validation at step {trainer.state.global_step}...")
+            eval_metrics = trainer.evaluate()
 
-        logger.info(f"📊 Validation metrics at epoch {epoch + 1}: {eval_metrics}")
+            logger.info(f"📊 Validation metrics at step {trainer.state.global_step}: {eval_metrics}")
 
-        if USE_WANDB:
-            wandb.log({f"eval_{k}": v for k, v in eval_metrics.items()}, step=trainer.state.global_step)
+            if USE_WANDB:
+                wandb.log({f"eval_{k}": v for k, v in eval_metrics.items()}, step=trainer.state.global_step)
+
+    # Final validation at the end of training
+    logger.info("🧪 Running final validation...")
+    eval_metrics = trainer.evaluate()
+    logger.info(f"📊 Final validation metrics: {eval_metrics}")
+    if USE_WANDB:
+        wandb.log({f"eval_{k}": v for k, v in eval_metrics.items()}, step=trainer.state.global_step)
 
     if USE_WANDB:
         wandb.finish()
