@@ -1,6 +1,6 @@
 import torch
-from configurations.config import INFERENCE_CONFIG, logger
-
+from configurations.config import INFERENCE_CONFIG, USE_WANDB, logger
+import wandb
 
 def get_adaptive_max_tokens():
     logger.info("🔍 Checking if adaptive token generation is enabled...")
@@ -18,7 +18,6 @@ def get_adaptive_max_tokens():
     max_tokens = INFERENCE_CONFIG.get("max_new_tokens", 512)
     logger.info(f"Using max_new_tokens: {max_tokens}")
     return max_tokens
-
 
 def predict(model, tokenizer, input_prompt, system_prompt=None):
     logger.info("💬 Starting prediction...")
@@ -65,6 +64,10 @@ def predict(model, tokenizer, input_prompt, system_prompt=None):
         ]
         response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
         logger.info(f"Generated response: {response}")
+
+        if INFERENCE_CONFIG.get("log_inference", False) and USE_WANDB:
+            wandb.log({"inference/max_new_tokens": max_new_tokens, "inference/response_length": len(response.split())})
+
         return response.strip()
 
     except Exception as e:
