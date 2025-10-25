@@ -3,6 +3,11 @@
 """
 Streamlit app for RAG Legal Assistant with automatic Chroma embedding storage.
 """
+import sys
+import os
+
+# Add the repo root to PYTHONPATH
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import os
 import streamlit as st
