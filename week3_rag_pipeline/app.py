@@ -6,10 +6,12 @@ Streamlit app for RAG Legal Assistant with automatic Chroma embedding storage.
 import sys
 import os
 
-# Add the repo root (one level above app.py) to PYTHONPATH
-repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if repo_root not in sys.path:
-    sys.path.append(repo_root)
+# ------------------------------
+# Ensure repo root is in PYTHONPATH
+# ------------------------------
+REPO_ROOT = os.path.dirname(os.path.abspath(__file__))  # week_3_rag_pipeline folder
+if REPO_ROOT not in sys.path:
+    sys.path.append(REPO_ROOT)
 
 
 import os
