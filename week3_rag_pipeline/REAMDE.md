@@ -211,6 +211,39 @@ The evaluation layer allows auditing of generated answers — critical for high-
 └────────────────────────┘
 ```
 
+## 🔄 Typical Workflow
+User enters a question in the Streamlit UI.
+Backend retrieves relevant chunks from the loaded documents (hybrid search).
+LLM generates a natural-language answer.
+Evaluator LLM verifies the answer’s faithfulness to the retrieved sources.
+Frontend displays:
+Retrieved passages
+Generated answer
+Evaluation score and comment
+
+Start the backend API:
+
+python main.py
+It runs by default on:
+http://127.0.0.1:8000
+
+Launch the Frontend Streamlit app:
+streamlit run streamlit_app.py
+
+Then open your browser at:
+http://localhost:8501
+
+
+## 🧰 Technologies Used
+Component	Technology / Library
+Backend API	Flask
+Frontend UI	Streamlit
+LLM Integration	LangChain + OpenAI / Azure OpenAI
+Retrieval Models	TF-IDF, Embedding-based search
+Evaluation	LLM-based JSON scorer
+Logging	Python logging module
+Environment Mgmt	.env + Config class
+
 ---
 
 ## 🗳️ Summary
@@ -224,3 +257,7 @@ This system demonstrates a **complete, production-grade RAG pipeline** that merg
 * User-friendly interaction.
 
 It represents a **foundation for enterprise-grade legal information systems**, capable of scaling to millions of legal documents while maintaining accuracy, explainability, and reliability.
+
+## 👨‍💻 Authors
+
+Developed by Sai Kiran as part of an applied learning exercise in RAG pipelines, modular design, and LLM evaluation.
