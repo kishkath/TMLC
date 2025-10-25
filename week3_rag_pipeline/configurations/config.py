@@ -43,6 +43,14 @@ CHROMA_BATCH_SIZE = config["chroma"].get("batch_size", 5000)
 # ------------------------------
 # LLM settings
 # ------------------------------
+from dotenv import load_dotenv
+import os
+
+# Load the .env file
+load_dotenv()
+
+# Access variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 LLM_MODEL_NAME = config["llm"]["model_name"]
 LLM_TEMPERATURE = config["llm"]["temperature"]
 OPENAI_API_KEY = config["llm"]["api_key"]
