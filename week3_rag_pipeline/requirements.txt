@@ -1,7 +1,7 @@
 datasets
 sentence-transformers
 chromadb
-langchain>=0.1.45
+langchain==0.3.23
 openai
 rank_bm25
 flask        # used in Step 2
