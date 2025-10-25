@@ -1,5 +1,7 @@
 # 🧠 Retrieval-Augmented Generation (RAG) Legal Information Assistant
 
+Deployed Details: https://github.com/kishkath/rag-legal-assistant/blob/main/README.md
+
 ## 📘 Overview
 
 This project is an **intelligent Retrieval-Augmented Generation (RAG) pipeline** designed to retrieve, reason, and respond accurately to **legal domain queries** using structured contextual data.
